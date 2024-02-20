@@ -1,17 +1,17 @@
 abstract class HorizontalBarEvent {}
 
-class HorizontalBarInitEvent extends HorizontalBarEvent {
-  final int totalWidth;
-  HorizontalBarInitEvent(this.totalWidth);
-}
-
 class HorizontalBarOnValueChangeEvent extends HorizontalBarEvent {
   final int submittedValue;
-  HorizontalBarOnValueChangeEvent(this.submittedValue);
+  final int totalRange;
+  final double totalWidth;
+  HorizontalBarOnValueChangeEvent(
+      this.submittedValue, this.totalRange, this.totalWidth);
 }
 
 class HorizontalBarValueSubmitEvent extends HorizontalBarEvent {
   final int submittedValue;
   final int totalRange;
-  HorizontalBarValueSubmitEvent(this.submittedValue, this.totalRange);
+  final double totalWidth;
+  HorizontalBarValueSubmitEvent(
+      this.submittedValue, this.totalRange, this.totalWidth);
 }

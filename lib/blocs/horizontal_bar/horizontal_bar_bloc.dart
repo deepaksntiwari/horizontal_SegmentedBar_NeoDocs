@@ -3,13 +3,10 @@ import 'package:horizontal_segmentedbar_neodocs/blocs/horizontal_bar/horizontal_
 import 'package:horizontal_segmentedbar_neodocs/blocs/horizontal_bar/horizontal_bar_state.dart';
 
 class HorizontalBarBloc extends Bloc<HorizontalBarEvent, HorizontalBarState> {
-  late int totalWidth;
   HorizontalBarBloc() : super(HorizontalBarInitialState()) {
-    on<HorizontalBarInitEvent>((event, emit) {
-      totalWidth = event.totalWidth;
-    });
     on<HorizontalBarOnValueChangeEvent>((event, emit) {
-      if (event.submittedValue > totalWidth) {
+      if ((event.submittedValue * event.totalWidth / event.totalRange) >
+          event.totalWidth) {
         emit(HorizontalBarInvalidValueState("Please enter valid value"));
       } else {
         emit(HorizontalBarValidValueState());
@@ -17,7 +14,7 @@ class HorizontalBarBloc extends Bloc<HorizontalBarEvent, HorizontalBarState> {
     });
     on<HorizontalBarValueSubmitEvent>((event, emit) {
       emit(HorizontalBarPlotBarState(
-          (event.submittedValue * totalWidth / event.totalRange) + 10,
+          (event.submittedValue * event.totalWidth / event.totalRange) + 7,
           event.submittedValue));
     });
   }

@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:horizontal_segmentedbar_neodocs/data/models/section_data.dart';
 
-class Section extends StatelessWidget {
-  const Section(
+class IndividualSection extends StatelessWidget {
+  const IndividualSection(
       {super.key,
       required this.barData,
       required this.totalRange,
