@@ -1,13 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:horizontal_segmentedbar_neodocs/blocs/horizontal_bar/horizontal_bar_bloc.dart';
+import 'package:horizontal_segmentedbar_neodocs/blocs/horizontal_bar/horizontal_bar_event.dart';
+import 'package:horizontal_segmentedbar_neodocs/blocs/horizontal_bar/horizontal_bar_state.dart';
 import 'package:horizontal_segmentedbar_neodocs/data/models/section_data.dart';
 
-class BarWithData extends StatefulWidget {
-  @override
-  _BarWithDataState createState() => _BarWithDataState();
-}
-
-class _BarWithDataState extends State<BarWithData> {
+class BarWithData extends StatelessWidget {
   final List<SectionData> data = [
     SectionData(start: 0, end: 30, color: Colors.red),
     SectionData(start: 30, end: 40, color: Colors.orange),
@@ -57,39 +56,40 @@ class _BarWithDataState extends State<BarWithData> {
                     ),
                   ),
                 ),
-                Stack(
-                  children: [
-                    for (var barData in data)
-                      Positioned(
-                        top: 0,
-                        left: (barData.start * totalWidth / totalRange) + 10,
-                        child: Text(
-                          '${barData.start}',
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    Positioned(
-                      right: 0,
-                      top: 0,
-                      child: Text("${data.last.end}"),
+                for (var barData in data)
+                  Positioned(
+                    top: 0,
+                    left: (barData.start * totalWidth / totalRange) + 10,
+                    child: Text(
+                      '${barData.start}',
+                      textAlign: TextAlign.center,
                     ),
-                    Row(
-                      children: [
-                        SizedBox(
-                          width: pointerLocation > totalWidth
-                              ? totalWidth
-                              : pointerLocation,
-                        ),
-                        Column(
-                          children: [
-                            const Expanded(child: SizedBox()),
-                            const Icon(CupertinoIcons.triangle_fill),
-                            Text(_customWidth.toInt().toString())
-                          ],
-                        ),
-                      ],
-                    )
-                  ],
+                  ),
+                Positioned(
+                  right: 0,
+                  top: 0,
+                  child: Text("${data.last.end}"),
+                ),
+                BlocBuilder<HorizontalBarBloc, HorizontalBarState>(
+                  builder: (context, state) {
+                    if (state is HorizontalBarPlotBarState) {
+                      return Row(
+                        children: [
+                          SizedBox(
+                            width: state.pointerPosition,
+                          ),
+                          Column(
+                            children: [
+                              const Expanded(child: SizedBox()),
+                              const Icon(CupertinoIcons.triangle_fill),
+                              Text(state.pointerValue.toString())
+                            ],
+                          ),
+                        ],
+                      );
+                    }
+                    return SizedBox();
+                  },
                 )
               ],
             ),
@@ -97,27 +97,52 @@ class _BarWithDataState extends State<BarWithData> {
           const SizedBox(height: 20),
           Padding(
             padding: const EdgeInsets.all(18.0),
-            child: Row(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: TextField(
-                    controller: _textFieldController,
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      labelText: 'Enter ',
-                      border: OutlineInputBorder(),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        onChanged: (value) =>
+                            BlocProvider.of<HorizontalBarBloc>(context).add(
+                                HorizontalBarOnValueChangeEvent(
+                                    int.parse(_textFieldController.text))),
+                        controller: _textFieldController,
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                          labelText: 'Enter value',
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
                     ),
-                  ),
+                    const SizedBox(width: 10),
+                    IconButton(
+                      icon: const Icon(CupertinoIcons.arrow_right_circle,
+                          size: 50),
+                      onPressed: () {
+                        BlocProvider.of<HorizontalBarBloc>(context).add(
+                            HorizontalBarValueSubmitEvent(
+                                int.parse(_textFieldController.text),
+                                totalRange));
+                        // setState(() {
+                        //   _customWidth = double.parse(_textFieldController.text);
+                        // });
+                      },
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 10),
-                IconButton(
-                  icon: const Icon(CupertinoIcons.arrow_right_circle, size: 50),
-                  onPressed: () {
-                    setState(() {
-                      _customWidth = double.parse(_textFieldController.text);
-                    });
+                BlocBuilder<HorizontalBarBloc, HorizontalBarState>(
+                  builder: (context, state) {
+                    if (state is HorizontalBarInvalidValueState)
+                      return Text(
+                        state.errorMsg,
+                        style: TextStyle(color: Colors.red),
+                        textAlign: TextAlign.start,
+                      );
+                    return SizedBox();
                   },
-                ),
+                )
               ],
             ),
           ),

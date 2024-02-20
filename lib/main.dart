@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:horizontal_segmentedbar_neodocs/blocs/horizontal_bar/horizontal_bar_bloc.dart';
+import 'package:horizontal_segmentedbar_neodocs/blocs/horizontal_bar/horizontal_bar_event.dart';
 import 'package:horizontal_segmentedbar_neodocs/screens/horizontal_bar.dart';
 
 void main() {
@@ -22,6 +25,11 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BarWithData();
+    double totalWidth = MediaQuery.of(context).size.width - 36;
+    return BlocProvider(
+      create: (context) =>
+          HorizontalBarBloc()..add(HorizontalBarInitEvent(totalWidth.toInt())),
+      child: BarWithData(),
+    );
   }
 }
