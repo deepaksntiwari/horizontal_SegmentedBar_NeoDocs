@@ -12,5 +12,7 @@ class HorizontalBarInvalidValueState extends HorizontalBarState {
 class HorizontalBarPlotBarState extends HorizontalBarState {
   final double pointerPosition;
   final int pointerValue;
-  HorizontalBarPlotBarState(this.pointerPosition, this.pointerValue);
+  final bool isPointerHovering;
+  HorizontalBarPlotBarState(
+      this.pointerPosition, this.pointerValue, this.isPointerHovering);
 }

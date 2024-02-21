@@ -5,8 +5,9 @@ import 'package:horizontal_segmentedbar_neodocs/blocs/horizontal_bar/horizontal_
 class HorizontalBarBloc extends Bloc<HorizontalBarEvent, HorizontalBarState> {
   HorizontalBarBloc() : super(HorizontalBarInitialState()) {
     on<HorizontalBarOnValueChangeEvent>((event, emit) {
-      if ((event.submittedValue * event.totalWidth / event.totalRange) >
-          event.totalWidth) {
+      if (event.submittedValue < 0 ||
+          (event.submittedValue * event.totalWidth / event.totalRange) >
+              event.totalWidth) {
         emit(HorizontalBarInvalidValueState("Please enter valid value"));
       } else {
         emit(HorizontalBarValidValueState());
@@ -15,7 +16,8 @@ class HorizontalBarBloc extends Bloc<HorizontalBarEvent, HorizontalBarState> {
     on<HorizontalBarValueSubmitEvent>((event, emit) {
       emit(HorizontalBarPlotBarState(
           (event.submittedValue * event.totalWidth / event.totalRange) + 7,
-          event.submittedValue));
+          event.submittedValue,
+          true));
     });
   }
 }
